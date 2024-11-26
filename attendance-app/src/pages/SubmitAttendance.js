@@ -36,13 +36,32 @@ async function GetWalletAddress(wallet_id) {
     return null;
   }
 }
+//get some coins
+async function get_coin(create_body){
+  const dest = '/miner/mine'; // destination 
+  //set up header
+  const create_header = {
+    'Content-Type': 'application/json',
+    'Accept': 'Accept: text/html',
 
+  };
+  //perform post
+  axios.post(dest, create_body, { headers: create_header }) 
+    .then(response => {
+      alert('You have sccuessfully get some coins:');
+      console.log(JSON.stringify(response.data))
+    })
+    .catch(error => {
+      console.error('Error occured when getting coins:',error);
+    });
+}
 function SubmitAttendance() {
   //get input 
   const [SID, setSID] = useState('');
   const [WalletPWD, setWalletPWD] = useState('');
   const [eventID, setEventID] = useState('');
   const [toAddress, setToAddress] = useState('');
+  const [getcoin, setGetcoin] = useState('');
   //find the targeted address. return when no wallet is found
   const handleSubmit = async () => {
     const fromAddress = await GetWalletAddress(SID);
@@ -65,6 +84,21 @@ function SubmitAttendance() {
 
     //create the transaction
     create_transaction(create_body,SID,WalletPWD)
+  };
+
+  
+  const submitSID = async () => {
+    const fromAddress = await GetWalletAddress(getcoin);
+    if (!fromAddress) {
+      console.error('Failed to fetch wallet address');
+      alert('Unable to fetch wallet address. Please try again later.');
+      return;
+    }
+    const create_body = {
+      rewardAddress: fromAddress,
+      feeAddress: fromAddress
+    }
+    get_coin(create_body);
   };
 
   return (
@@ -111,6 +145,22 @@ function SubmitAttendance() {
         fullWidth
       >
         Submit
+      </Button>
+      <TextField
+        label="Student ID for getting coin"
+        value={getcoin}
+        onChange={(e) => setGetcoin(e.target.value)}
+        variant="outlined"
+        fullWidth
+        margin="normal"
+      />
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={submitSID}
+        fullWidth
+      >
+        Get some coins
       </Button>
     </Container>
   );
