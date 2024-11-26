@@ -7,22 +7,19 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 
 // POST create_transaction 
-async function create_wallet_with_address(create_body){
-  const dest = `/operator/wallets`; // destination 
-  //set up header
+async function create_wallet_with_address(create_body) {
+  const dest = `/operator/wallets`; // Use relative URL
   const create_header = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
-  //perform post
-  axios.post(dest, create_body, { headers: create_header }) 
-    .then(response => {
-      alert('You have sccuessfully create a wallet');
-      console.log(JSON.stringify(response.data))
-    })
-    .catch(error => {
-      console.error('Error occured when createing transaction:',error);
-    });
+  try {
+    const response = await axios.post(dest, create_body, { headers: create_header });
+    alert('You have successfully created a wallet');
+    console.log(JSON.stringify(response.data));
+  } catch (error) {
+    alert(`Error occurred when creating wallet: ${error.response ? error.response.data : error.message}`);
+  }
 }
 
 function Register() {
