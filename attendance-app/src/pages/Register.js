@@ -4,13 +4,38 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import axios from 'axios';
+
+// POST create_transaction 
+async function create_wallet_with_address(create_body){
+  const dest = `/operator/wallets`; // destination 
+  //set up header
+  const create_header = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+  //perform post
+  axios.post(dest, create_body, { headers: create_header }) 
+    .then(response => {
+      alert('You have sccuessfully create a wallet');
+      console.log(JSON.stringify(response.data))
+    })
+    .catch(error => {
+      console.error('Error occured when createing transaction:',error);
+    });
+}
 
 function Register() {
   const [studentID, setStudentID] = useState('');
+  const [walletPWD, setWalletPWD] = useState('');
 
   const handleRegister = () => {
     // Implement registration logic here
-    console.log('Registering student with ID:', studentID);
+    const create_body = {
+      password: walletPWD,
+      studentID: studentID
+    }
+    create_wallet_with_address(create_body);
   };
 
   return (
@@ -22,6 +47,14 @@ function Register() {
         label="Student ID"
         value={studentID}
         onChange={(e) => setStudentID(e.target.value)}
+        variant="outlined"
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        label="Wallet Password"
+        value={walletPWD}
+        onChange={(e) => setWalletPWD(e.target.value)}
         variant="outlined"
         fullWidth
         margin="normal"
