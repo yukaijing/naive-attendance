@@ -5,27 +5,26 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+
 // POST create_transaction 
-async function create_transaction(create_body,wallet_id,password){
+async function create_transaction(create_body, wallet_id, password) {
   const dest = `/operator/wallets/${wallet_id}/transactions`; // destination 
-  //set up header
   const create_header = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'password': password
   };
-  //perform post
-  axios.post(dest, create_body, { headers: create_header }) 
-    .then(response => {
-      alert('You have sccuessfully create a transaction, attendent will be taken:');
-      console.log(JSON.stringify(response.data))
-    })
-    .catch(error => {
 
-      console.error('Error occured when createing transaction:',error);
-    });
+  try {
+    const response = await axios.post(dest, create_body, { headers: create_header });
+    alert('You have successfully created a transaction, attendance will be taken:');
+    console.log(JSON.stringify(response.data));
+  } catch (error) {
+    console.error('Error occurred when creating transaction:', error);
+  }
 }
-//fetch wallet address by wallet
+
+// Fetch wallet address by wallet
 async function GetWalletAddress(wallet_id) {
   const dest = `/operator/wallets/${wallet_id}`;
   try {
@@ -37,25 +36,48 @@ async function GetWalletAddress(wallet_id) {
   }
 }
 
+// Get some coins
+async function get_coin(create_body) {
+  const dest = '/miner/mine'; // destination 
+  const create_header = {
+    'Content-Type': 'application/json',
+    'Accept': 'text/html',
+  };
+
+  try {
+    const response = await axios.post(dest, create_body, { headers: create_header });
+    alert('You have successfully got some coins:');
+    console.log(JSON.stringify(response.data));
+  } catch (error) {
+    console.error('Error occurred when getting coins:', error);
+  }
+}
+
 function SubmitAttendance() {
-  //get input 
   const [SID, setSID] = useState('');
   const [WalletPWD, setWalletPWD] = useState('');
   const [eventID, setEventID] = useState('');
-  const [toAddress, setToAddress] = useState('');
-  //find the targeted address. return when no wallet is found
+
   const handleSubmit = async () => {
     const fromAddress = await GetWalletAddress(SID);
-    if (!fromAddress) {
-      console.error('Failed to fetch wallet address');
+    const toAddress = await GetWalletAddress(eventID);
+
+    if (!fromAddress || !toAddress) {
       alert('Unable to fetch wallet address. Please try again later.');
       return;
     }
 
-    //create POST method body
+    const create_body_mine = {
+      rewardAddress: fromAddress,
+      feeAddress: fromAddress
+    };
+
+    // Wait for get_coin to finish
+    await get_coin(create_body_mine);
+
     const create_body = {
       fromAddress: fromAddress,
-      toAddress: toAddress,
+      toAddress: eventID,
       amount: 1,
       studentId: SID,
       eventId: eventID,
@@ -63,8 +85,8 @@ function SubmitAttendance() {
       type: "regular"
     };
 
-    //create the transaction
-    create_transaction(create_body,SID,WalletPWD)
+    // Wait for create_transaction to finish
+    await create_transaction(create_body, SID, WalletPWD);
   };
 
   return (
@@ -79,7 +101,7 @@ function SubmitAttendance() {
         variant="outlined"
         fullWidth
         margin="normal"
-      />     
+      />
       <TextField
         label="Wallet Password"
         value={WalletPWD}
@@ -87,19 +109,11 @@ function SubmitAttendance() {
         variant="outlined"
         fullWidth
         margin="normal"
-      />     
+      />
       <TextField
         label="Event ID"
         value={eventID}
         onChange={(e) => setEventID(e.target.value)}
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />      
-      <TextField
-        label="Attendance Address"
-        value={toAddress}
-        onChange={(e) => setToAddress(e.target.value)}
         variant="outlined"
         fullWidth
         margin="normal"
