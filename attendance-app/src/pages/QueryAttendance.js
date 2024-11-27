@@ -55,12 +55,15 @@ async function getAllBlock() {
 }
 
 
-async function query_studentId(studentId, startTime, endTime) {  //query about a specific student's attendance
+async function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about a specific student's attendance
   
 
   const jsonObject = await getAllBlock();
 
-  console.log(studentId, startTime = 0, endTime = 0);
+  console.log(studentId, startTime, endTime);
+  console.log(studentId);
+  console.log(startTime);
+  console.log(endTime);
 
   //[startTime, endTime] = await setTime(startTime, endTime);
 
@@ -117,43 +120,55 @@ async function query_studentId(studentId, startTime, endTime) {  //query about a
                   console.log(startTime);
                   console.log(endTime);
                   console.log('after check studentID');
+                  console.log(247426749747546);
+                  console.log(message_timestamp);
 
-                  if (startTime != '' && endTime != '') {  // have time range
-                      if (message_timestamp >= startTime && message_timestamp <= endTime) {
+                  // Convert startTime and endTime to Unix timestamps if they are not empty
+                  const startTimeStamp = startTime !== '' ? new Date(startTime).getTime() : 0;
+                  const endTimeStamp = endTime !== '' ? new Date(endTime).getTime() : 0;
+                  const messageTimeStamp = new Date(message_timestamp).getTime();
+
+                  console.log(99999);
+                  console.log(startTimeStamp);
+                  console.log(endTimeStamp);
+                  console.log(messageTimeStamp);
+
+                  if (startTimeStamp != '0' && endTimeStamp != '0') {  // have time range
+                      if (messageTimeStamp >= startTimeStamp && messageTimeStamp <= endTimeStamp) {
                           console.log("have time range");   
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime != '' && endTime == '') {   // accept record after startTime
-                      if (message_timestamp >= startTime) {
-                          console.log("only have startTime");  
+                  }else if (startTimeStamp != '0' && endTimeStamp == '0') {   // accept record after startTimeStamp
+                      if (messageTimeStamp > startTimeStamp) {
+                          console.log("only have startTimeStamp");  
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime == '' && endTime != '') {  // accept record before endTime
-                      if (message_timestamp <= endTime) {
-                          console.log("only have endTime");  
+                  }else if (startTimeStamp == '0' && endTimeStamp != '0') {  // accept record before endTimeStamp
+                      if (messageTimeStamp < endTimeStamp) {
+                          console.log("only have endTimeStamp");  
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime == '' && endTime == '') {   // no time parameter input
+                  }else if (startTimeStamp == '0' && endTimeStamp == '0') {   // no time parameter input
                       console.log("not time limitation"); 
                       attendancelist.push({
                           "studentID": message_studentId,
                           "eventID": message_eventId,
-                          "timestamp": message_timestamp
+                          "timestamp": messageTimeStamp
                       });
                   }else {
-                      console.log("Error: startTime and endTime have problem");
+                      console.log("Error: startTimeStamp and endTimeStamp have problem");
                   }
 
       
@@ -224,35 +239,46 @@ async function query_eventId(eventId, startTime = 0, endTime = 0) {  //query abo
                 console.log(message_timestamp);  
 
 
+                  // Convert startTime and endTime to Unix timestamps if they are not empty
+                  const startTimeStamp = startTime !== '' ? new Date(startTime).getTime() : 0;
+                  const endTimeStamp = endTime !== '' ? new Date(endTime).getTime() : 0;
+                  const messageTimeStamp = new Date(message_timestamp).getTime();
 
-                  if (startTime != '' && endTime != '') {  // have time range
-                      if (message_timestamp >= startTime && message_timestamp <= endTime) {
+                  console.log(99999);
+                  console.log(startTimeStamp);
+                  console.log(endTimeStamp);
+                  console.log(messageTimeStamp);
+
+
+
+                  if (startTimeStamp != '0' && endTimeStamp != '0') {  // have time range
+                      if (messageTimeStamp >= startTimeStamp && messageTimeStamp <= endTimeStamp) {
                           console.log("have time range"); 
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime != '' && endTime == '') {   // accept record after startTime
-                      if (message_timestamp >= startTime) {
-                          console.log("only have startTime");  
+                  }else if (startTimeStamp != '0' && endTimeStamp == '0') {   // accept record after startTimeStamp
+                      if (messageTimeStamp > startTimeStamp) {
+                          console.log("only have startTimeStamp");  
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime == '' && endTime != '') {  // accept record before endTime
-                      if (message_timestamp <= endTime) {
-                          console.log("only have endTime");  
+                  }else if (startTimeStamp == '0' && endTimeStamp != '0') {  // accept record before endTimeStamp
+                      if (messageTimeStamp < endTimeStamp) {
+                          console.log("only have endTimeStamp");  
                           attendancelist.push({
                               "studentID": message_studentId,
                               "eventID": message_eventId,
-                              "timestamp": message_timestamp
+                              "timestamp": messageTimeStamp
                           });
                       }
-                  }else if (startTime == '' && endTime == '') {   // no time parameter input
+                  }else if (startTimeStamp == '0' && endTimeStamp == '0') {   // no time parameter input
                       console.log("not time limitation"); 
                       attendancelist.push({
                           "studentID": message_studentId,
@@ -260,7 +286,7 @@ async function query_eventId(eventId, startTime = 0, endTime = 0) {  //query abo
                           "timestamp": message_timestamp
                       });
                   }else {
-                      console.log("Error: startTime and endTime have problem");
+                      console.log("Error: startTimeStamp and endTimeStamp have problem");
                   }
                   
 
@@ -386,7 +412,7 @@ function QueryAttendance() {
      
 
       <TextField
-        label="Start Time [optional]"
+        label="Start Time / Search records after the specified date [optional]"
         type="datetime-local"
         value={startTime}
         onChange={(e) => setStartTime(e.target.value)}
@@ -398,7 +424,7 @@ function QueryAttendance() {
       }}
       />
       <TextField
-        label="End Time [optional]"
+        label="End Time / Search records before the specified date [optional]"
         type="datetime-local"
         value={endTime}
         onChange={(e) => setEndTime(e.target.value)}
